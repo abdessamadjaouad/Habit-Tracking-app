@@ -51,10 +51,10 @@ def main():
         sys.exit(1)
     
     try:
-        from gui import HabitTrackerGUI
+        from gui import ModernHabitTrackerGUI
         
-        # Create and run the application
-        app = HabitTrackerGUI()
+        # Create and run the modern application
+        app = ModernHabitTrackerGUI()
         app.run()
         
     except Exception as e:

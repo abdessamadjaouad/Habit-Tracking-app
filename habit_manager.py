@@ -59,7 +59,15 @@ class HabitManager:
         return self.db_manager.update_habit(habit_id, name.strip(), description.strip())
     
     def delete_habit(self, habit_id: int) -> bool:
-        """Delete a habit."""
+        """
+        Delete a habit with validation.
+        
+        Args:
+            habit_id (int): Habit ID to delete
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
         return self.db_manager.delete_habit(habit_id)
     
     def toggle_habit_completion(self, habit_id: int, completion_date: date) -> bool:
@@ -109,8 +117,8 @@ class HabitManager:
             habit_id = habit['id']
             logs = self.db_manager.get_habit_logs(habit_id, start_date, end_date)
             
-            # Create a lookup dictionary for logs
-            log_dict = {log['completion_date'].day: log['completed'] for log in logs}
+            # Create a lookup dictionary for logs with proper boolean conversion
+            log_dict = {log['completion_date'].day: bool(log['completed']) for log in logs}
             
             # Fill in completion data for each day
             for day in range(1, calendar.monthrange(year, month)[1] + 1):
@@ -148,6 +156,52 @@ class HabitManager:
         end_date = date(year, month, calendar.monthrange(year, month)[1])
         
         return self.db_manager.get_habit_statistics(habit_id, start_date, end_date)
+    
+    def get_habit_chart_data(self, habit_id: int, months_back: int = 12) -> List[Dict]:
+        """
+        Get habit completion data for the last N months for charting.
+        
+        Args:
+            habit_id (int): Habit ID
+            months_back (int): Number of months to go back (default: 12)
+            
+        Returns:
+            List[Dict]: List of monthly data with completions and total days
+        """
+        chart_data = []
+        current_date = datetime.now()
+        
+        for i in range(months_back, 0, -1):
+            # Calculate the target month and year
+            target_month = current_date.month - i + 1
+            target_year = current_date.year
+            
+            # Handle year rollover
+            while target_month <= 0:
+                target_month += 12
+                target_year -= 1
+            
+            # Get the number of days in the target month
+            days_in_month = calendar.monthrange(target_year, target_month)[1]
+            
+            # Get completion data for this month
+            start_date = date(target_year, target_month, 1)
+            end_date = date(target_year, target_month, days_in_month)
+            
+            logs = self.db_manager.get_habit_logs(habit_id, start_date, end_date)
+            completed_days = sum(1 for log in logs if log['completed'])
+            
+            # Format month name
+            month_name = f"{calendar.month_abbr[target_month]} {target_year}"
+            
+            chart_data.append({
+                'month': month_name,
+                'completions': completed_days,
+                'total_days': days_in_month,
+                'percentage': round((completed_days / days_in_month) * 100, 1) if days_in_month > 0 else 0
+            })
+        
+        return chart_data
     
     def get_habit_by_id(self, habit_id: int) -> Optional[Dict]:
         """

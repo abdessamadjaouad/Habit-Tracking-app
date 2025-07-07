@@ -1,0 +1,17 @@
+# Alternative requirements for users experiencing build issues
+# Use this if requirements.txt fails to install
+
+# Core database connector
+mysql-connector-python
+
+# Plotting library (try these alternatives if matplotlib fails)
+matplotlib
+# Alternative: pip install matplotlib --prefer-binary
+# Alternative: conda install matplotlib
+
+# Calendar widget
+tkcalendar
+
+# Image processing (optional - used for better GUI)
+# Pillow
+# Note: Pillow is optional and can be skipped if causing issues

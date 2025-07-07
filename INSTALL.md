@@ -58,6 +58,20 @@ source habit_tracker_env/bin/activate
 ```bash
 # Install required packages
 pip install -r requirements.txt
+
+# If you encounter build errors, try these alternatives:
+
+# Option 1: Install with pre-built binaries
+pip install --only-binary=all -r requirements.txt
+
+# Option 2: Use minimal requirements (skips optional packages)
+pip install -r requirements-minimal.txt
+
+# Option 3: Install packages individually
+pip install mysql-connector-python
+pip install matplotlib
+pip install tkcalendar
+pip install Pillow  # Optional - can be skipped
 ```
 
 ### Step 4: Configure Database
@@ -119,6 +133,30 @@ EXIT;
 ## Troubleshooting
 
 ### Common Issues
+
+#### 0. Pillow/Package Build Errors
+If you get build errors like "Getting requirements to build wheel did not run successfully":
+
+**Solution 1 - Use pre-built binaries:**
+```bash
+pip install --only-binary=all -r requirements.txt
+```
+
+**Solution 2 - Install without Pillow (minimal install):**
+```bash
+pip install mysql-connector-python matplotlib tkcalendar
+```
+
+**Solution 3 - Update pip and retry:**
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+**Solution 4 - Use conda instead of pip:**
+```bash
+conda install mysql-connector-python matplotlib tkcalendar pillow
+```
 
 #### 1. "mysql.connector not found"
 ```bash

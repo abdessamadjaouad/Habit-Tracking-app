@@ -24,6 +24,14 @@ call habit_tracker_env\Scripts\activate.bat
 REM Install requirements if needed
 echo Checking requirements...
 pip install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo Warning: Standard requirements failed. Trying alternatives...
+    echo Installing packages individually...
+    pip install mysql-connector-python
+    pip install matplotlib
+    pip install tkcalendar
+    echo Pillow installation skipped due to build issues - app will work without it
+)
 
 REM Run the application
 echo Starting Habit Tracker application...

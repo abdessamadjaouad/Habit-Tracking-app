@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime, date
-from typing import List, Dict, Optional, Tuple, Any, cast
+from typing import List, Dict, Optional, Tuple, Any
 import logging
 import os
 
@@ -93,9 +93,7 @@ class DatabaseManager:
             logger.error("No database connection available for creating tables")
             return
             
-        # Type assertion to help type checker
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         # Create habits table
         create_habits_table = """
@@ -123,7 +121,7 @@ class DatabaseManager:
         try:
             cursor.execute(create_habits_table)
             cursor.execute(create_logs_table)
-            conn.commit()
+            self.connection.commit()
             logger.info("Database tables created successfully")
         except Error as e:
             logger.error(f"Error creating tables: {e}")
@@ -145,14 +143,13 @@ class DatabaseManager:
             logger.error("No database connection available")
             return False
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         try:
             query = "INSERT INTO habits (name, description, created_date) VALUES (%s, %s, %s)"
             values = (name, description, date.today())
             cursor.execute(query, values)
-            conn.commit()
+            self.connection.commit()
             logger.info(f"Habit '{name}' added successfully")
             return True
         except Error as e:
@@ -172,8 +169,7 @@ class DatabaseManager:
             logger.error("No database connection available")
             return []
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True)
         
         try:
             query = "SELECT * FROM habits WHERE is_active = TRUE ORDER BY name"
@@ -202,14 +198,13 @@ class DatabaseManager:
             logger.error("No database connection available")
             return False
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         try:
             query = "UPDATE habits SET name = %s, description = %s WHERE id = %s"
             values = (name, description, habit_id)
             cursor.execute(query, values)
-            conn.commit()
+            self.connection.commit()
             logger.info(f"Habit ID {habit_id} updated successfully")
             return True
         except Error as e:
@@ -232,13 +227,12 @@ class DatabaseManager:
             logger.error("No database connection available")
             return False
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         try:
             query = "UPDATE habits SET is_active = FALSE WHERE id = %s"
             cursor.execute(query, (habit_id,))
-            conn.commit()
+            self.connection.commit()
             logger.info(f"Habit ID {habit_id} deleted successfully")
             return True
         except Error as e:
@@ -263,8 +257,7 @@ class DatabaseManager:
             logger.error("No database connection available")
             return False
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         try:
             query = """
@@ -274,7 +267,7 @@ class DatabaseManager:
             """
             values = (habit_id, completion_date, completed, completed)
             cursor.execute(query, values)
-            conn.commit()
+            self.connection.commit()
             return True
         except Error as e:
             logger.error(f"Error logging habit completion: {e}")
@@ -298,8 +291,7 @@ class DatabaseManager:
             logger.error("No database connection available")
             return []
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True)
         
         try:
             query = """
@@ -332,8 +324,7 @@ class DatabaseManager:
             logger.error("No database connection available")
             return False
             
-        conn = cast(Any, self.connection)
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
         
         try:
             query = "SELECT completed FROM habit_logs WHERE habit_id = %s AND completion_date = %s"
